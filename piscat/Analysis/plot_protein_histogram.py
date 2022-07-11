@@ -90,6 +90,14 @@ class PlotProteinHistogram(PrintColors):
         self.t_particle_ID_dark = []
         self.t_particle_frame_dark = []
 
+        # modified Stranik 07.06.2022
+        self.t_mean_x_center = []
+        self.t_mean_y_center = []
+        self.t_properties = []
+        self.t_frame_number = []
+
+
+
     def __call__(self, folder_name, particles, batch_size, video_frame_num, MinPeakWidth, MinPeakProminence,
                  pixel_size=0.66):
         """
@@ -175,9 +183,18 @@ class PlotProteinHistogram(PrintColors):
 
                 self.localization(x_center_clean, y_center_clean, center_int_clean, particle_ID_clean, frame_number_clean)
 
-                self.data_handling(center_int_clean, center_int_flow_clean, folder_name, sigma_clean, num_parameters, fit_intensity,
+                # modified Stranik 07.06.2022
+                properties, fit_properties = self.data_handling(center_int_clean, center_int_flow_clean, folder_name, sigma_clean, num_parameters, fit_intensity,
                                    fit_X_sigma, fit_Y_sigma, frame_number, batch_size, video_frame_num,
                                    MinPeakWidth=MinPeakWidth, MinPeakProminence=MinPeakProminence)
+
+                if properties is not None:
+                    self.t_mean_x_center.append(np.mean(x_center_clean))
+                    self.t_mean_y_center.append(np.mean(y_center_clean))
+                    self.t_properties.append(properties)
+                    self.t_frame_number.append(frame_number)
+               # ------------------
+
 
         if type(particles) is np.ndarray:
 
@@ -251,10 +268,16 @@ class PlotProteinHistogram(PrintColors):
                 self.localization(x_center_clean, y_center_clean, center_int_clean, particle_ID_clean,
                                   frame_number_clean)
 
-                self.data_handling(center_int_clean, center_int_flow_clean, folder_name, sigma_clean, num_parameters,
-                                   fit_intensity,
+                # modified Stranik 07.06.2022
+                properties, fit_properties = self.data_handling(center_int_clean, center_int_flow_clean, folder_name, sigma_clean, num_parameters, fit_intensity,
                                    fit_X_sigma, fit_Y_sigma, frame_number, batch_size, video_frame_num,
                                    MinPeakWidth=MinPeakWidth, MinPeakProminence=MinPeakProminence)
+                if properties is not None:
+                    self.t_mean_x_center.append(np.mean(x_center_clean))
+                    self.t_mean_y_center.append(np.mean(y_center_clean))
+                    self.t_properties.append(properties)
+                    self.t_frame_number.append(frame_number)
+                # ------------------
 
     def localization(self, x_center, y_center, center_int, particle_ID, frame_number):
         if np.mean(center_int) >= 0:
@@ -684,7 +707,7 @@ class PlotProteinHistogram(PrintColors):
 
         return df, list_data, title
 
-    def GMM(self, data, max_n_components):
+    def GMM(self, data, max_n_components, asnumber = False):
         data = data.reshape(-1, 1)
         nan_array = np.isnan(data)
         not_nan_array = ~ nan_array
@@ -730,7 +753,11 @@ class PlotProteinHistogram(PrintColors):
             stdevs = [sci_num(s_[0][0]) for s_ in stdevs_]
             weights = [sci_num(w_) for w_ in weights_]
 
-            return means, stdevs, weights, AIC, BIC
+            # added Stranik 10.6.2022
+            if asnumber:
+                return means_, stdevs_, weights_, AIC, BIC
+            else:
+                return means, stdevs, weights, AIC, BIC
         except:
             print('---Data is not enough for GMM!---')
             return np.nan, np.nan, np.nan, np.nan, np.nan
@@ -962,10 +989,7 @@ class PlotProteinHistogram(PrintColors):
         font_size = font_size
         bbox = [0, 0, 1, 1]
         ax2.axis('off')
-        colors = plt.cm.BuPu(np.linspace(0, 0.5, df.shape[0]))
-        cell_colors = [[colors[i_]] * df.shape[1] for i_ in range(df.shape[0])]
-        mpl_table = ax2.table(cellText=df.values, rowLabels=df.index, bbox=bbox, colLabels=df.columns,  rowColours=colors,
-                              cellColours=cell_colors)
+        mpl_table = ax2.table(cellText=df.values, rowLabels=df.index, bbox=bbox, colLabels=df.columns)
         mpl_table.auto_set_font_size(False)
         mpl_table.set_fontsize(font_size)
         fig.add_subplot(ax2)
