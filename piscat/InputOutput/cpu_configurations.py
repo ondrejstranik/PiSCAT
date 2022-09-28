@@ -8,7 +8,7 @@ import sys
 
 class CPUConfigurations():
 
-    def __init__(self, n_jobs=-1, backend='multiprocessing', verbose=0, parallel_active=True, threshold_for_parallel_run=None, flag_report=False):
+    def __init__(self, n_jobs=-1, backend='loki', verbose=0, parallel_active=True, threshold_for_parallel_run=None, flag_report=False):
         """
         This class generates a JSON file based on the parallel loop setting on the CPU that the user prefers.
         This JSON was used by other functions and methods to set hyperparameters in a parallel loop.
@@ -65,8 +65,8 @@ class CPUConfigurations():
             setting_dic = {'n_jobs': [self.n_jobs], 'backend': [self.backend], 'verbose': [self.verbose],
                             'parallel_active': [self.parallel_active],
                             'threshold_for_parallel_run': [self.threshold_for_parallel_run]}
-
-            self.save_cpu_setting(setting_dic)
+            # modified Stranik 27.9.2022
+            #self.save_cpu_setting(setting_dic)
 
     def save_cpu_setting(self, setting_dic):
         name = 'cpu_configurations.json'

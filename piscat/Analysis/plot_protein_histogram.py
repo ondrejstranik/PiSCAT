@@ -95,6 +95,8 @@ class PlotProteinHistogram(PrintColors):
         self.t_mean_y_center = []
         self.t_properties = []
         self.t_frame_number = []
+        self.t_x_center = []
+        self.t_y_center = []
 
 
 
@@ -191,6 +193,8 @@ class PlotProteinHistogram(PrintColors):
                 if properties is not None:
                     self.t_mean_x_center.append(np.mean(x_center_clean))
                     self.t_mean_y_center.append(np.mean(y_center_clean))
+                    self.t_x_center.append(x_center_clean[properties[2][2]])
+                    self.t_y_center.append(y_center_clean[properties[2][2]])
                     self.t_properties.append(properties)
                     self.t_frame_number.append(frame_number)
                # ------------------
@@ -275,6 +279,8 @@ class PlotProteinHistogram(PrintColors):
                 if properties is not None:
                     self.t_mean_x_center.append(np.mean(x_center_clean))
                     self.t_mean_y_center.append(np.mean(y_center_clean))
+                    self.t_x_center.append(x_center_clean[properties[2][2]])
+                    self.t_y_center.append(y_center_clean[properties[2][2]])
                     self.t_properties.append(properties)
                     self.t_frame_number.append(frame_number)
                 # ------------------
@@ -321,7 +327,7 @@ class PlotProteinHistogram(PrintColors):
                                                                start_FN_earlyV=start_FN_earlyV, end_FN_earlyV=end_FN_earlyV,
                                                                MinPeakWidth=MinPeakWidth, MinPeakProminence=MinPeakProminence)
 
-                properties = [V_smooth, V_smooth_follow, [peak, index_peak], [yi, xi], [prom, prom_idx, p_idx_, pro_],
+                properties = [V_smooth, V_smooth_follow, [peak, index_peak, idx_], [yi, xi], [prom, prom_idx, p_idx_, pro_],
                               tprofile_frameNo_DRA_longer, start_FN_earlyV, end_FN_earlyV]
 
                 self.folder_name.append(folder_name)
